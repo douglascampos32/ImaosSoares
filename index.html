@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesagem</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: rgb(65, 115, 189);
+            font-family: Montserrat, Arial, sans-serif;
+        }
+
+        table, th, td {
+            border: 1.5px solid black;
+            text-align: center;
+            background: #fbfbfb;
+            margin: 0 auto;
+            border-collapse: collapse;
+            padding: 4px 15px;
+        }
+
+        table tr:nth-child(odd){
+            background-color: rgb(238, 238, 238);
+        }
+
+        table tr:nth-child(even){
+            background-color: rgb(104, 98, 98);
+        }
+
+        th {
+            background-color: rgb(161, 162, 165);
+        }
+
+        button {
+            margin-top: 10px;
+            border-radius: 1dvh;
+            padding: 9px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #636568;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover, .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @media print {
+            button, .acoes {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <h2 style="color: antiquewhite;">Irmãos Soares</h2>
+        
+        <!-- Botão para abrir o modal -->
+        <button id="modalBtn">Adicionar Produto</button>
+
+        <!-- Modal -->
+        <div id="itemModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <form id="form" action="inserir.php" method="POST">
+                    <label for="item">Escolha um item:</label><br>
+                    <input list="itens" id="item" name="item" style="text-align: left;" required> 
+                    <datalist id="itens">
+                        <option value="Aço"></option>
+                        <option value="Aço Panela"></option>
+                        <option value="Aerosol C/F"></option>
+                        <option value="Aerosol S/F"></option>
+                        <option value="Antimonio"></option>
+                        <option value="Bateria"></option>
+                        <option value="Bloco"></option>
+                        <option value="Bloco c/f"></option>
+                        <option value="Borra Aluminio"></option>
+                        <option value="Borra Cobre"></option>
+                        <option value="Borra Metal"></option>
+                        <option value="Bronze"></option>
+                        <option value="Cabo"></option>
+                        <option value="Cabo de aluminio"></option>
+                        <option value="Chumbo"></option>
+                        <option value="Chumbo Duro"></option>
+                        <option value="Chumbo de Roda"></option>
+                        <option value="Cobre 1"></option>
+                        <option value="Cobre 2"></option>
+                        <option value="Cobre 3"></option>
+                        <option value="Cobre Tubo"></option>
+                        <option value="Estrutural"></option>
+                        <option value="Estamparia"></option>
+                        <option value="Fio"></option>
+                        <option value="H.D"></option>
+                        <option value="Lata -4%"></option>
+                        <option value="Lata"></option>
+                        <option value="Limalha AL"></option>
+                        <option value="Limalha Cobre"></option>
+                        <option value="Limalha Metal"></option>
+                        <option value="Lino Tipo"></option>
+                        <option value="Lino Type"></option>
+                        <option value="Metal"></option>
+                        <option value="Motor G"></option>
+                        <option value="Motor P"></option>
+                        <option value="motor Al"></option>
+                        <option value="Obs 1"></option>
+                        <option value="Obs 2"></option>
+                        <option value="OffSet"></option>
+                        <option value="Palha"></option>
+                        <option value="Panela"></option>
+                        <option value="Panela C/F"></option>
+                        <option value="Perfil"></option>
+                        <option value="Perfil Pintado"></option>
+                        <option value="Persiana"></option>
+                        <option value="Placa Intermediaria"></option>
+                        <option value="Placa Mãe"></option>
+                        <option value="Placa Pesada"></option>
+                        <option value="RAD. Metal"></option>
+                        <option value="RCA C/F"></option>
+                        <option value="RCA S/F"></option>
+                        <option value="RDA"></option>
+                        <option value="Roda"></option>
+                        <option value="Zinco"></option>
+                    </datalist>
+
+                    <br><br>
+
+                    <input type="number" id="pesoBruto" name="pesoBruto" placeholder="Peso Bruto (Kg)" required>
+                    <br><br>
+                    <input type="number" id="tara" name="tara" placeholder="Tara (Kg)" required>
+                    <br><br>
+                    <button type="submit" id="add">Adicionar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <p>
+        <table id="tabela">
+            <thead>
+                <tr>
+                    <td colspan="5">Irmãos Soares</td>
+                </tr>
+                <tr>
+                    <th>Item</th>
+                    <th>Peso Bruto (Kg)</th>
+                    <th>Tara (Kg)</th>
+                    <th>Peso Líquido (Kg)</th>
+                    <th class="acoes">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <?php
+                include 'config.php';
+                $stmt = $pdo->query("SELECT * FROM produtos");
+                $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                $totalPeso = 0;
+
+                foreach ($produtos as $produto):
+                    $totalPeso += $produto['peso_liquido'];
+                ?>
+                    <tr>
+                        <td><?= htmlspecialchars($produto['item']) ?></td>
+                        <td><?= number_format($produto['peso_bruto'], 2) ?></td>
+                        <td><?= number_format($produto['tara'], 2) ?></td>
+                        <td><?= number_format($produto['peso_liquido'], 2) ?></td>
+                        <td class="acoes">
+                            <form action="excluir.php" method="POST">
+                                <input type="hidden" name="id" value="<?= $produto['id'] ?>">
+                                <button type="submit">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+            
+            <tfoot>
+                <tr>
+                    <td colspan="3"><strong>Total</strong></td>
+                    <td id="totalPeso"><?= number_format($totalPeso, 2) ?></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    
+        <button id="btn" onclick="imprimirTabela()">Imprimir Tabela</button>
+    </p>
+
+    <script>
+        // Função para abrir o modal
+        const modal = document.getElementById("itemModal");
+        const btn = document.getElementById("modalBtn");
+        const span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function imprimirTabela() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
